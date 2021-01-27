@@ -4,3 +4,8 @@ optitrack
 calib
 
 odrivetestnogui.py
+/venv/
+
+*.pickle
+
+odrv_test.py

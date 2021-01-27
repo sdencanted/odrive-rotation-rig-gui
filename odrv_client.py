@@ -15,11 +15,12 @@ HOST = '192.168.1.102'  # The server's hostname or IP address
 PORT = 9000  # The port used by the server
 
 
-def client_thread(queue, tkqueue, killevent):
+def client_thread(queue, tkqueue, killevent, host_ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.settimeout(0.5)
-        s.connect((HOST, PORT))
+        # s.connect((HOST, PORT))
+        s.connect((host_ip, PORT))
         while not killevent.is_set():
             data = 0
             try:
@@ -162,13 +163,13 @@ def tk_thread(tkqueue, killevent):
     B0 = tk.Button(master, text="0", command=lambda: velCallBack(0), width=4, height=2)
     B0.pack(in_=bar, side=tk.LEFT)
 
-    B1 = tk.Button(master, text="1", command=lambda: velCallBack(0), width=4, height=2)
+    B1 = tk.Button(master, text="1", command=lambda: velCallBack(1), width=4, height=2)
     B1.pack(in_=bar, side=tk.LEFT)
 
-    B3 = tk.Button(master, text="3", command=lambda: velCallBack(0), width=4, height=2)
+    B3 = tk.Button(master, text="3", command=lambda: velCallBack(3), width=4, height=2)
     B3.pack(in_=bar, side=tk.LEFT)
 
-    B5 = tk.Button(master, text="5", command=lambda: velCallBack(0), width=4, height=2)
+    B5 = tk.Button(master, text="5", command=lambda: velCallBack(5), width=4, height=2)
     B5.pack(in_=bar, side=tk.LEFT)
 
     bar2 = tk.Frame(master)
@@ -177,13 +178,13 @@ def tk_thread(tkqueue, killevent):
     def put_to_queue(value):
         tkqueue.put([value, w4.get(), w1.get(), w2.get(), w3.get()])
 
-    B_start = tk.Button(master, text="Start", command=lambda: put_to_queue(0), width=4, height=2)
+    B_start = tk.Button(master, text="Start / Update speed", command=lambda: put_to_queue(0), width=14, height=2)
     B_start.pack(in_=bar2, side=tk.LEFT)
 
     B_stop = tk.Button(master, text="Stop", command=lambda: put_to_queue(1), width=4, height=2)
     B_stop.pack(in_=bar2, side=tk.LEFT)
 
-    B_param_upload = tk.Button(master, text="Param upload", command=lambda: put_to_queue(2), width=4, height=2)
+    B_param_upload = tk.Button(master, text="Param upload", command=lambda: put_to_queue(2), width=10, height=2)
     B_param_upload.pack(in_=bar2, side=tk.LEFT)
 
     B_exit = tk.Button(master, text="Exit", command=lambda: killevent.set(), width=4, height=2)
@@ -200,7 +201,7 @@ if __name__ == "__main__":
     killsig = Queue(5)
     killevent = Event()
     # creating processes
-    p1 = multiprocessing.Process(target=client_thread, args=(queue, tkqueue, killevent,))
+    p1 = multiprocessing.Process(target=client_thread, args=(queue, tkqueue, killevent,sys.argv[1],))
     # p2 = multiprocessing.Process(target=plot_thread, args=(queue, killevent,))
     p3 = multiprocessing.Process(target=tk_thread, args=(tkqueue, killevent,))
 
