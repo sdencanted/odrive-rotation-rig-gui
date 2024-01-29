@@ -11,10 +11,9 @@ import time
 # from pyqtgraph.Qt import QtCore, QtGui
 
 import sys
-HOST = '192.168.1.102'  # The server's hostname or IP address
+HOST = '10.19.189.56'  # The server's hostname or IP address
 PORT = 9000  # The port used by the server
-
-
+import argparse
 def client_thread(queue, tkqueue, killevent, host_ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -130,23 +129,26 @@ def client_thread(queue, tkqueue, killevent, host_ip):
 #         plt.close()
 
 
-def tk_thread(tkqueue, killevent):
+def tk_thread(tkqueue, killevent,simple=False):
     master = tk.Tk()
 
     w1 = tk.Scale(master, from_=0, to=100, orient=tk.HORIZONTAL, tickinterval=5, length=2000, width=80, sliderlength=80,
                   label="pos gain")
-    w1.set(1)
-    w1.pack()
+    w1.set(20)
+    if not simple:
+        w1.pack()
     w2 = tk.Scale(master, from_=0, to=0.5, orient=tk.HORIZONTAL, tickinterval=0.1, length=2000, width=80,
                   sliderlength=80,
                   resolution=0.01, label="vel gain")
-    w2.set(0.1)
-    w2.pack()
+    w2.set(0.3)
+    if not simple:
+        w2.pack()
     w3 = tk.Scale(master, from_=0, to=0.5, orient=tk.HORIZONTAL, tickinterval=0.1, length=2000, width=80,
                   sliderlength=80,
                   resolution=0.01, label="vel int gain")
-    w3.set(0.1)
-    w3.pack()
+    w3.set(0.15)
+    if not simple:
+        w3.pack()
     w4 = tk.Scale(master, from_=0, to=5, orient=tk.HORIZONTAL, tickinterval=1, length=2000, width=80, sliderlength=80,
                   resolution=0.2, label="velocity")
     w4.set(0)
@@ -190,12 +192,18 @@ def tk_thread(tkqueue, killevent):
     B_exit = tk.Button(master, text="Exit", command=lambda: killevent.set(), width=4, height=2)
     B_exit.pack(in_=bar2, side=tk.LEFT)
 
+    #send the default params first 
+    put_to_queue(2)
     while not killevent.is_set():
         master.update_idletasks()
         master.update()
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser("python3 odrv_client.py")
+    parser.add_argument("--simple", help="hide tuning controls", action="store_true",dest="simple")
+    parser.set_defaults(simple=False)
+    args = parser.parse_args()
     queue = Queue()
     tkqueue = Queue()
     killsig = Queue(5)
@@ -203,7 +211,7 @@ if __name__ == "__main__":
     # creating processes
     p1 = multiprocessing.Process(target=client_thread, args=(queue, tkqueue, killevent,sys.argv[1],))
     # p2 = multiprocessing.Process(target=plot_thread, args=(queue, killevent,))
-    p3 = multiprocessing.Process(target=tk_thread, args=(tkqueue, killevent,))
+    p3 = multiprocessing.Process(target=tk_thread, args=(tkqueue, killevent,args.simple))
 
     # starting process 1
     p1.start()
