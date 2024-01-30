@@ -203,7 +203,7 @@ def tk_thread(tkqueue, killevent,simple=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("python3 odrv_client.py")
     parser.add_argument("--simple", help="hide tuning controls", action="store_true",dest="simple")
-    parser.add_argument("--ip", help="IP address of odrive server", type=str,default="192.168.1.150")
+    parser.add_argument("--ip", help="IP address of odrive server", type=str,default="100.74.220.98")
     parser.set_defaults(simple=False)
     args = parser.parse_args()
     queue = Queue()
