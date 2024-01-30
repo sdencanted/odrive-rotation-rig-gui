@@ -11,7 +11,7 @@ import time
 # from pyqtgraph.Qt import QtCore, QtGui
 
 import sys
-HOST = '10.19.189.56'  # The server's hostname or IP address
+# HOST = '192.168.1.150'  # The server's hostname or IP address
 PORT = 9000  # The port used by the server
 import argparse
 def client_thread(queue, tkqueue, killevent, host_ip):
@@ -20,6 +20,7 @@ def client_thread(queue, tkqueue, killevent, host_ip):
         s.settimeout(0.5)
         # s.connect((HOST, PORT))
         s.connect((host_ip, PORT))
+        # s.connect((192.168.1.150, PORT))
         while not killevent.is_set():
             data = 0
             try:
@@ -202,6 +203,7 @@ def tk_thread(tkqueue, killevent,simple=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("python3 odrv_client.py")
     parser.add_argument("--simple", help="hide tuning controls", action="store_true",dest="simple")
+    parser.add_argument("--ip", help="IP address of odrive server", type=str,default="192.168.1.150")
     parser.set_defaults(simple=False)
     args = parser.parse_args()
     queue = Queue()
@@ -209,7 +211,7 @@ if __name__ == "__main__":
     killsig = Queue(5)
     killevent = Event()
     # creating processes
-    p1 = multiprocessing.Process(target=client_thread, args=(queue, tkqueue, killevent,sys.argv[1],))
+    p1 = multiprocessing.Process(target=client_thread, args=(queue, tkqueue, killevent,args.ip,))
     # p2 = multiprocessing.Process(target=plot_thread, args=(queue, killevent,))
     p3 = multiprocessing.Process(target=tk_thread, args=(tkqueue, killevent,args.simple))
 

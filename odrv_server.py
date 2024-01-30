@@ -18,6 +18,7 @@ from multiprocessing import Queue
 import socket
 import select
 from ast import literal_eval
+import argparse
 
 # get IP address of machine
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,12 +29,15 @@ PORT = 9000  # Port to listen on (non-privileged ports are > 1023)
 
 
 
-def server_thread(queue, tkqueue):
+def server_thread(queue, tkqueue,ip=""):
+    if ip=="":
+        ip=HOST
     try:
         while True:
             s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((HOST, PORT))
+            s.bind((ip, PORT))
+            print("hostname is ",ip)
             s.listen()
             conn, addr = s.accept()
             conn.settimeout(0.5)
@@ -124,12 +128,18 @@ def ping_thread(queue, tkqueue):
 
 
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser("python3 odrv_client.py")
+    parser.add_argument("--ip", help="IP address of odrive server", type=str,default="100.74.220.98")
+    parser.set_defaults(simple=False)
+    args = parser.parse_args()
+
     queue = Queue()
     tkqueue = Queue()
 
 
     # creating processes
-    p1 = multiprocessing.Process(target=server_thread, args=(queue, tkqueue,))
+    p1 = multiprocessing.Process(target=server_thread, args=(queue, tkqueue,args.ip))
     p2 = multiprocessing.Process(target=ping_thread, args=(queue, tkqueue,))
 
     # starting process 1
