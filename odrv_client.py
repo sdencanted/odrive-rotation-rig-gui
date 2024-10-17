@@ -151,7 +151,7 @@ def tk_thread(tkqueue, killevent,simple=False):
     if not simple:
         w3.pack()
     w4 = tk.Scale(master, from_=0, to=5, orient=tk.HORIZONTAL, tickinterval=1, length=2000, width=80, sliderlength=80,
-                  resolution=0.2, label="velocity")
+                  resolution=0.1, label="velocity")
     w4.set(0)
     w4.pack()
 
