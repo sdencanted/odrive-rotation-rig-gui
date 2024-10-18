@@ -141,13 +141,13 @@ def tk_thread(tkqueue, killevent,simple=False):
     w2 = tk.Scale(master, from_=0, to=0.5, orient=tk.HORIZONTAL, tickinterval=0.1, length=2000, width=80,
                   sliderlength=80,
                   resolution=0.01, label="vel gain")
-    w2.set(0.3)
+    w2.set(0.254)
     if not simple:
         w2.pack()
     w3 = tk.Scale(master, from_=0, to=0.5, orient=tk.HORIZONTAL, tickinterval=0.1, length=2000, width=80,
                   sliderlength=80,
                   resolution=0.01, label="vel int gain")
-    w3.set(0.15)
+    w3.set(0.449)
     if not simple:
         w3.pack()
     w4 = tk.Scale(master, from_=0, to=5, orient=tk.HORIZONTAL, tickinterval=1, length=2000, width=80, sliderlength=80,
