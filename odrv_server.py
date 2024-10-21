@@ -76,11 +76,11 @@ def server_thread(queue, tkqueue,ip=""):
 def ping_thread(queue, tkqueue):
     try:
         od = odrive.find_any()
-        axis = od.axis1
+        axis = od.axis0
 
-        # wait for odrive to finish calibration
-        while axis.current_state != AXIS_STATE_CLOSED_LOOP_CONTROL:
-            sleep(1)
+        # # wait for odrive to finish calibration
+        # while axis.current_state != AXIS_STATE_CLOSED_LOOP_CONTROL:
+        #     sleep(1)
 
         axis.controller.config.vel_limit = 6
 
@@ -99,6 +99,7 @@ def ping_thread(queue, tkqueue):
                 print(params)
                 if params[0] == 0:
                     # start spinning
+                    axis.requested_state =8
                     print("spinning at ",params[1])
                     axis.controller.input_vel = params[1]
                     running = True
@@ -106,6 +107,7 @@ def ping_thread(queue, tkqueue):
                     # stop program
                     print("stopping")
                     axis.controller.input_vel = 0
+                    axis.requested_state =1
                     running = False
                 elif params[0] == 2:
                     # set params
